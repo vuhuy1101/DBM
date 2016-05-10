@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href=
+    "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel=
+    "stylesheet">
+    <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js">
+    </script>
+    <script src=
+    "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js">
+    </script>
+
+    <script type="text/javascript" src="../static/js/script.js"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='css/script.css') }}"></script>
+
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+
+    <link href="{{ url_for('static',filename='css/style.css') }}" rel=
+    "stylesheet" type="text/css">
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css">
+    
+    <style>
+        #loadops{
+            height:180px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="Button_group">
+        <button class="btn btn-primary" id="subTest" type="button">CUBE TESTER AJAX</button>
+        <!-- <form method="get">
+            <input class="btn btn-info"  value="BASE CUBE">
+        </form> -->
+
+
+        <div class="form-group">
+        <div class="row">
+            <div class="btn-group col-md-2">
+                <!-- markup for dropdown 1 -->
+                <div class="dropdown">
+                    <p class="text-info dimensionInfoText" id="time_text">Time
+                    Dimension</p><button class=
+                    "btn btn-primary dropdown-toggle dimensionText form-control" data-toggle="dropdown"
+                    type="button"><span class=
+                    "selection">Concept Hierarchy </span>
+                    <span class="caret"></span>
+                    <input type="text" class='dropdownValue' name='conceptTime'>
+                </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="#" value="date" id="time_date">Date</a>
+                        </li>
+                        <li>
+                            <a href="#" value="day_of_week" id="time_day_of_week">Day of Week</a>
+                        </li>
+
+                        <li>
+                            <a href="#" value="day_number_in_month" id="time_day_of_week">Day Number in Month</a>
+                        </li>
+
+                        <li>
+                            <a href="#" value="month" id="time_month">Month</a>
+                        </li>
+                        <li>
+                            <a href="#" value="quarter" id="time_quarter">Quarter</a>
+                        </li>
+                        <li>
+                            <a href="#" value="fiscal_period" id="time_fiscal_period">Fiscal Period</a>
+                        </li>
+                        <li>
+                           <a href="#" value="year" id="time_year">Year</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="btn-group col-md-2">
+                <div class="dropdown">
+                    <p class="text-info dimensionInfoText" id="product_text">Product
+                    Dimension</p><button class=
+                    "btn btn-primary dropdown-toggle dimensionText form-control" data-toggle="dropdown"
+                    type="button"><span class=
+                    "selection">Concept Hierarchy </span>
+                    <span class="caret"></span>
+                    <input type='text' class='dropdownValue' name='conceptProduct'>
+                </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="#" value="description" id="product_name">Description</a>
+                        </li>
+                        <li>
+                            <a href="#" value="brand" id="product_name">Brand</a>
+                        </li>
+                        <li>
+                            <a href="#" value="subcategory" id="product_subcategory">Subcategory</a>
+                        </li>
+                        <li>
+                            <a href="#" value = "category" id="product_category">Category</a>
+                        </li>
+                        <li>
+                            <a href="#" value="department" id="prduct_department">Department</a>
+                        </li>
+                    </ul>
+                </div><!-- markup for dropdown 2 -->
+            </div>
+            <div class="btn-group col-md-2">
+                <div class="dropdown">
+                    <p class="text-info dimensionInfoText" id="store_text">Store
+                    Dimension</p><button class=
+                    "btn btn-primary dropdown-toggle dimensionText form-control" data-toggle="dropdown"
+                    type="button"><span class=
+                    "selection">Concept Hierarchy </span>
+                    <span class="caret"></span>
+                    <input type='text' class='dropdownValue' name='conceptStore'>
+                </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="#" value="store_number" id="store_number">Store Number</a>
+                        </li>
+                        <li>
+                            <a href="#" value="street_address" id="store_street_address">Street Address</a>
+                        </li>
+                        <li>
+                            <a href="#" value="city" id="store_city">City</a>
+                        </li>                        
+                        <li>
+                            <a href="#" value="county" id="store_county">County</a>
+                        </li>
+                        <li>
+                            <a href="#" value="state" id="store_state">State</a>
+                        </li>
+
+                        <li>
+                            <a href="#" value="zip" id="store_zip">Zipcode</a>
+                        </li>
+
+                        <li>
+                            <a href="#" value="district" id="store_district">District</a>
+                        </li>
+
+                        <li>
+                            <a href="#" value="region" id="store_region">Region</a>
+                        </li>
+                    </ul>
+                </div><!-- markup for dropdown 3 -->
+            </div>
+        </div>
+
+    </div>
+    <button class="btn btn-success" id="customSubmit" type="submit">Get Original Central Cube </button>
+    <div id="loadops"></div>
+       
+        <hr id="horizontal_line_below_button">
+        <p id="mysql_info_text">MySQL results below</p>
+        <hr>
+
+        <table class="table table-hover" id="olapResultTable">
+            <thead id="olapResultTableHeader"> 
+
+            </thead>
+
+            <tbody id="olapResultTableBody">
+
+            </tbody>
+    </table>
+
+        
+
+    </div>
+</body>
+</html>

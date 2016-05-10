@@ -1,0 +1,453 @@
+
+<p>Select your action:</p>
+	<div class="">
+		<label><input id='addDim' type='radio' name='action' value='addDim' onclick='displayOption()'>Add Dimension</label>
+		<label><input id='removeDim' type='radio' name='action' value='removeDim' onclick='displayOption()'>Remove Dimension</label>
+		<label><input id='rollup' type='radio' name='action' value='rollup' onclick='displayOption()'>Roll Up</label>
+		<label><input id='drilldown' type='radio' name='action' value='drilldown' onclick='displayOption()'>Drill Down</label>
+		<label><input id='slice' type='radio' name='action' value='slice' onclick='displayOption()'>Slice</label>
+		<label><input id='dice' type='radio' name='action' value='dice' onclick='displayOption()'>Dice</label>
+	</div>
+
+	<div id='addDimOption' style='display:none;'>
+		<p>Choose a dimension:</p>
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Product" type="radio" name="dimension" value="Product" onclick="add_dim('productAttr');update('productAttr','storeAttr','timeAttr',0);">Product 
+				</label>
+			</div>
+
+			<select class="form-control" class="productAttr" name="productAttr" style='display:none;'>
+				<option value="description">description</option>
+				<option value="brand">Brand</option>
+				<option value="subcategory">Subcategory</option>
+				<option value="category">Category</option>
+				<option value="department">Department</option>
+			</select>
+		</div>
+		
+		
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Store" type="radio" name="dimension" value="Store" onclick="add_dim('storeAttr');update('storeAttr','productAttr','timeAttr',0)">Store 
+				</label>
+			</div>
+
+			<select class="form-control" class="storeAttr" name="storeAttr" style='display:none;'>
+				<option value="store_number">Store Number</option>
+				<option value="street_address">Street Address</option>
+				<option value="city">City</option>
+				<option value="county">County</option>
+				<option value="state">State</option>
+				<option value="zip">Zipcode</option>
+				<option value="district">District</option>
+				<option value="region">Region</option>
+			</select>
+
+		</div>
+			
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Time" type="radio" name="dimension" value="Time" onclick="add_dim('timeAttr');update('timeAttr','storeAttr','productAttr',0)">Time
+				</label>
+			</div>
+
+			<select class="form-control" class="timeAttr" name="timeAttr" style='display:none;'>
+				<option value="date">Date</option>
+				<option value="day_of_week">Date of Week</option>
+				<option value="day_number_in_month">Day Number in Month</option>
+				<option value="month">Month</option>
+				<option value="quarter">Quarter</option>
+				<option value="fiscal_period">Fiscal Period</option>
+				<option value="year">Year</option>
+			</select>
+
+		</div>
+	</div>
+	
+	<div id='removeDimOption' style='display:none;'>
+		<p>Choose a dimension:</p>
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Product" type="radio" name="dimension" value="Product" onclick="remove_dim('productAttr');update('productAttr','storeAttr','timeAttr',1);">Product 
+				</label>
+			</div>
+
+			<select class="form-control" class="productAttr" name="productAttr" style='display:none;'>
+				<option value="description">description</option>
+				<option value="brand">Brand</option>
+				<option value="subcategory">Subcategory</option>
+				<option value="category">Category</option>
+				<option value="department">Department</option>
+			</select>
+		
+		</div>
+		
+		
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Store" type="radio" name="dimension" value="Store" onclick="remove_dim('storeAttr');update('storeAttr','productAttr','timeAttr',1)">Store 
+				</label>
+			</div>
+
+			<select class="form-control" class="storeAttr" name="storeAttr" style='display:none;'>
+				<option value="store_number">Store Number</option>
+				<option value="street_address">Street Address</option>
+				<option value="city">City</option>
+				<option value="county">County</option>
+				<option value="state">State</option>
+				<option value="zip">Zipcode</option>
+				<option value="district">District</option>
+				<option value="region">Region</option>
+			</select>
+
+		</div>
+			
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Time" type="radio" name="dimension" value="Time" onclick="remove_dim('timeAttr');update('timeAttr','storeAttr','productAttr',1)">Time
+				</label>
+			</div>
+
+			<select class="form-control" class="timeAttr" name="timeAttr" style='display:none;'>
+				<option value="date">Date</option>
+				<option value="day_of_week">Date of Week</option>
+				<option value="day_number_in_month">Day Number in Month</option>
+				<option value="month">Month</option>
+				<option value="quarter">Quarter</option>
+				<option value="fiscal_period">Fiscal Period</option>
+				<option value="year">Year</option>
+			</select>
+
+		</div>
+	</div>
+	
+	<div id='rollupOption' style='display:none;'>
+		<p>Choose a dimension:</p>
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Product" type="radio" name="dimension" value="Product" onclick="roll_up('productAttr');update('productAttr','storeAttr','timeAttr',2);">Product 
+				</label>
+			</div>
+
+			<select class="form-control" class="productAttr" name="productAttr" style='display:none;'>
+				<option value="description">description</option>
+				<option value="brand">Brand</option>
+				<option value="subcategory">Subcategory</option>
+				<option value="category">Category</option>
+				<option value="department">Department</option>
+			</select>
+		
+		</div>
+			
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Store" type="radio" name="dimension" value="Store" onclick="roll_up('storeAttr');update('storeAttr','productAttr','timeAttr',2)">Store 
+				</label>
+			</div>
+
+			<select class="form-control" class="storeAttr" name="storeAttr" style='display:none;'>
+				<option value="store_number">Store Number</option>
+				<option value="street_address">Street Address</option>
+				<option value="city">City</option>
+				<option value="county">County</option>
+				<option value="state">State</option>
+				<option value="zip">Zipcode</option>
+				<option value="district">District</option>
+				<option value="region">Region</option>
+			</select>
+
+		</div>
+			
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Time" type="radio" name="dimension" value="Time" onclick="roll_up('timeAttr');update('timeAttr','storeAttr','productAttr',2)">Time
+				</label>
+			</div>
+
+			<select class="form-control" class="timeAttr" name="timeAttr" style='display:none;'>
+				<option value="date">Date</option>
+				<option value="day_of_week">Date of Week</option>
+				<option value="day_number_in_month">Day Number in Month</option>
+				<option value="month">Month</option>
+				<option value="quarter">Quarter</option>
+				<option value="fiscal_period">Fiscal Period</option>
+				<option value="year">Year</option>
+			</select>
+
+		</div>
+
+	</div>
+	
+	<div id='drilldownOption' style='display:none;'>
+		<p>Choose a dimension:</p>
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Product" type="radio" name="dimension" value="Product" onclick="drill_down('productAttr');update('productAttr','storeAttr','timeAttr',3);">Product 
+				</label>
+			</div>
+
+			<select class="form-control" class="productAttr" name="productAttr"  style='display:none;'>
+				<option value="description">description</option>
+				<option value="brand">Brand</option>
+				<option value="subcategory">Subcategory</option>
+				<option value="category">Category</option>
+				<option value="department">Department</option>
+			</select>
+		
+		</div>
+		
+		
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Store" type="radio" name="dimension" value="Store" onclick="drill_down('storeAttr');update('storeAttr','productAttr','timeAttr',3)">Store 
+				</label>
+			</div>
+
+			<select class="form-control" class="storeAttr" name="storeAttr" style='display:none;'>
+				<option value="store_number">Store Number</option>
+				<option value="street_address">Street Address</option>
+				<option value="city">City</option>
+				<option value="county">County</option>
+				<option value="state">State</option>
+				<option value="zip">Zipcode</option>
+				<option value="district">District</option>
+				<option value="region">Region</option>
+			</select>
+
+		</div>
+			
+		<div class="col-xs-2">
+			<div class="radio">
+				<label>
+				<input id="Time" type="radio" name="dimension" value="Time" onclick="drill_down('timeAttr');update('timeAttr','storeAttr','productAttr',3)">Time
+				</label>
+			</div>
+
+			<select class="form-control" class="timeAttr" name="timeAttr" style='display:none;'>
+				<option value="date">Date</option>
+				<option value="day_of_week">Date of Week</option>
+				<option value="day_number_in_month">Day Number in Month</option>
+				<option value="month">Month</option>
+				<option value="quarter">Quarter</option>
+				<option value="fiscal_period">Fiscal Period</option>
+				<option value="year">Year</option>
+			</select>
+
+		</div>
+
+	</div>
+	
+	<div id='sliceOption' style='display:none;'>
+		<p>This is slice</p> 
+	</div>
+	
+	<div id='diceOption' style='display:none;'> 
+		<p>This is dice</p> 
+	</div> 
+	
+<input type="submit" id="submit" value="Submit" class="btn btn-info">
+
+<script type='text/javascript'>
+	var productD = ['description', 'brand', 'subcategory', 'category', 'department'];
+	var storeD = ['store_number','street_address','city','county','state','zip','district','region'];
+	var timeD = ['date', 'day_of_week', 'day_number_in_month', 'month', 'quarter', 'fiscal_period', 'year'];
+	
+	function add_dim(name){
+		var list = document.getElementsByName(name)[0].getElementsByTagName("option");
+		var i,j;
+		var thArray = [];
+		var pos = -1;
+		
+
+		//get the value from the table headers
+		$('#displayTable > thead > tr > th').each(function(){
+			thArray.push($(this).text())
+		})
+		
+		//disable that option
+		for(i = 0; i < thArray.length;i++){
+			for(j = 0; j < list.length; j++){
+				if(list[j].value == thArray[i]){
+					pos = j;
+				}
+			}
+			if(pos > -1){  
+				list[pos].disabled = true;
+			}
+		}
+	}
+	
+	function remove_dim(name){
+		var list = document.getElementsByName(name)[1].getElementsByTagName("option");
+		var i,j;
+		var thArray = [];
+		var pos = -1;
+		
+
+		//get the value from the table headers
+		$('#displayTable > thead > tr > th').each(function(){
+			thArray.push($(this).text())
+		})
+		
+		//disable that option
+		for(i = 0; i < thArray.length;i++){
+			for(j = 0; j < list.length; j++){
+				if(list[j].value == thArray[i]){
+					pos = j;
+				}
+			}
+			if(pos > -1){  
+				for(i = 0; i < list.length; i++){
+					if(pos != i)
+						list[i].disabled = true;
+				}
+				
+			}
+		}
+	}
+	
+	
+	function roll_up(name){
+		var list = document.getElementsByName(name)[2].getElementsByTagName("option");
+		var i,j;
+		var thArray = [];
+		var pos = -1;
+		
+
+		//get the value from the table headers
+		$('#displayTable > thead > tr > th').each(function(){
+			thArray.push($(this).text())
+		})
+		
+		//disable that option
+		for(i = 0; i < thArray.length;i++){
+			for(j = 0; j < list.length; j++){
+				if(list[j].value == thArray[i])
+					pos = j;
+			}
+			if(pos > -1){  
+				while(pos > -1){
+					list[pos].disabled = true;
+					pos--;
+				}
+			}
+		}
+	}
+	
+	function drill_down(name){
+		var list = document.getElementsByName(name)[3].getElementsByTagName("option");
+		var i,j;
+		var thArray = [];
+		var pos = -1;
+		
+
+		//get the value from the table headers
+		$('#displayTable > thead > tr > th').each(function(){
+			thArray.push($(this).text())
+		})
+		
+		//disable that option
+		for(i = 0; i < thArray.length;i++){
+			for(j = 0; j < list.length; j++){
+				if(list[j].value == thArray[i]){
+					pos = j;
+				}
+			}
+			if(pos > -1){  
+				while(pos < list.length){
+					list[pos].disabled = true;
+					pos++;
+				}
+			}
+		}
+	}
+	
+	
+	
+	function update(c1, c2, c3, index){
+		document.getElementsByName(c1)[index].style.display = "block";
+		var class2 = document.getElementsByName(c2);
+		var class3 = document.getElementsByName(c3);
+		
+		for(var i = 0; i < class2.length;i++)
+			class2[i].style.display = "none";
+			
+		for(var i = 0; i < class3.length;i++)
+			class3[i].style.display = "none";
+	}
+	
+	function displayOption(){
+		if(document.getElementById('addDim').checked == true)
+			document.getElementById('addDimOption').style.display = "block";
+		else
+			document.getElementById('addDimOption').style.display = "none";
+
+		if(document.getElementById('removeDim').checked == true)
+			document.getElementById('removeDimOption').style.display = "block";
+		else 
+			document.getElementById('removeDimOption').style.display = "none";
+
+		if(document.getElementById('rollup').checked == true){
+			document.getElementById('rollupOption').style.display = "block";
+		}else 
+			document.getElementById('rollupOption').style.display = "none";
+
+		if(document.getElementById('drilldown').checked == true)
+			document.getElementById('drilldownOption').style.display = "block";
+		else 
+			document.getElementById('drilldownOption').style.display = "none";
+
+		if(document.getElementById('slice').checked == true)
+			document.getElementById('sliceOption').style.display = "block";
+		else 
+			document.getElementById('sliceOption').style.display = "none";
+
+		if(document.getElementById('dice').checked == true)
+			document.getElementById('diceOption').style.display = "block";
+		else 
+			document.getElementById('diceOption').style.display = "none";
+		
+	}
+	
+function testAJAX(){
+	var req;
+	
+	req = new XMLHttpRequest();
+	req.onreadystatechange = function(){
+		if(req.readyState == 4 && req.status == 200){
+			var response = JSON.parse(req.responseText);
+			document.getElementById('myDiv').innerHTML = req.responseText;
+			var str = "<table class='table table-hover' id='displayTable'>";
+			for(var i = 0 ; i < response.length;i++){
+				str += ("<tr><td>" + response[i].category + "</td><td>" + response[i].city + "</td><td>" + response[i].year + "</td><td>" + response[i].total_sales + "</tr>"); 
+			}
+			str += "</table>";
+			
+			document.getElementById('myDiv').innerHTML = str;
+			
+		}
+		else document.getElementById('myDiv').innerHTML = "hi";
+	}
+	
+	req.open('GET', '/getResults');
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	req.send();
+	
+	return true;
+}
+	
+</script>
+
+			
