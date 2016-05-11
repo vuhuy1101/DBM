@@ -28,8 +28,8 @@ def loadOps():
 
 @app.route('/getResults')
 def getResults():
-	
 	db =  MySQLdb.connect("127.0.0.1","root","","GroceryDB")
+	#db =  MySQLdb.connect("127.0.0.1","root","0309","GroceryDB")
 	cur = db.cursor()
 
 	#if isinstance(request.form['conceptTime'], basestring):
@@ -38,7 +38,7 @@ def getResults():
 	#	__productDimensionHierarchy = request.form['conceptProduct']
 	#if isinstance(request.form['conceptStore'], basestring):
 	#	__storeDimensionHierarchy = request.form['conceptStore']
-	if request.args.get('action') == "rollup":
+	if request.args.get('action') == "addDim" or request.args.get('action') == "removeDim" or request.args.get('action') == "rollup" or request.args.get('action') == "drilldown":
 		time = request.args.get('conceptTime')
 		product = request.args.get('conceptProduct')
 		store = request.args.get('conceptStore')
@@ -69,7 +69,10 @@ def getResults():
 		cur.execute("select 'Please select a concept hierarchy'")
 
 	elif not __productDimensionHierarchy and not __storeDimensionHierarchy: 
-		print(1)
+		if action == "rollup":
+			if time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
 		select_stmt = "select t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, `sales_fact` f "
 		where_stmt = "where t.time_key = f.time_key "
@@ -83,7 +86,26 @@ def getResults():
 		#		" order by t."+__timeDimensionHierarchy)
 
 	elif not __timeDimensionHierarchy and not __storeDimensionHierarchy:
-		print(2)
+		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+		select_stmt = "select p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
+		from_stmt = "from Product p, `sales_fact` f "
+		where_stmt = "where p.product_key = f.product_key "
+		groupby_stmt = "group by p."+__productDimensionHierarchy+" order by p."+__productDimensionHierarchy
+		
+		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
+		#cur.execute("select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) "+
+		#	"AS total_sales from Store s,`sales_fact` f "+
+		#	"where s.store_key = f.store_key "+
+		#	"group by s."+__storeDimensionHierarchy+
+		#	" order by s."+__storeDimensionHierarchy)
+	elif not __timeDimensionHierarchy and not __productDimensionHierarchy:
+		if action == "rollup":
+			if store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
 		select_stmt = "select p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, `sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key "
@@ -118,7 +140,13 @@ def getResults():
 		#	"group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+
 		#	" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
 	elif not __storeDimensionHierarchy:
-		print(4)
+		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+			elif time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
 		select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Time t,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key AND t.time_key = f.time_key "
@@ -132,7 +160,13 @@ def getResults():
 		#		"group by p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+
 		#		" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy)
 	elif not __productDimensionHierarchy:
-		print(5)
+		if action == "rollup":
+			if time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
+			elif store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
 		select_stmt = "select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, Store s,`sales_fact` f "
 		where_stmt = "where s.store_key = f.store_key AND t.time_key = f.time_key "
@@ -149,6 +183,16 @@ def getResults():
 	
 
 	else:
+		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+			elif store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
+			elif time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
 		select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Time t, Store s,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key "+"AND s.store_key = f.store_key "+"AND t.time_key = f.time_key "
@@ -164,7 +208,6 @@ def getResults():
 			#	"group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+
 			#	" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
 	
-	print(123123123)
 	print(select_stmt + from_stmt + where_stmt + groupby_stmt)
 	
 	cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
