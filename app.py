@@ -29,8 +29,8 @@ def loadOps():
 
 @app.route('/getResults')
 def getResults():
-	db =  MySQLdb.connect("127.0.0.1","root","","GroceryDB")
-	#db =  MySQLdb.connect("127.0.0.1","root","0309","GroceryDB")
+	#db =  MySQLdb.connect("127.0.0.1","root","","GroceryDB")
+	db =  MySQLdb.connect("127.0.0.1","root","0309","GroceryDB")
 	cur = db.cursor()
 
 	#if isinstance(request.form['conceptTime'], basestring):
@@ -39,7 +39,7 @@ def getResults():
 	#	__productDimensionHierarchy = request.form['conceptProduct']
 	#if isinstance(request.form['conceptStore'], basestring):
 	#	__storeDimensionHierarchy = request.form['conceptStore']
-	if request.args.get('action') == "addDim" or request.args.get('action') == "removeDim" or request.args.get('action') == "rollup" or request.args.get('action') == "drilldown":
+	if request.args.get('action') == "addDim" or request.args.get('action') == "removeDim" or request.args.get('action') == "rollup" or request.args.get('action') == "drilldown" or request.args.get('action') == "slice" or request.args.get('action') == "dice":
 		time = request.args.get('conceptTime')
 		product = request.args.get('conceptProduct')
 		store = request.args.get('conceptStore')
@@ -62,6 +62,7 @@ def getResults():
 		__productDimensionHierarchy = request.args.get('conceptProduct')
 		__storeDimensionHierarchy = request.args.get('conceptStore')
 		action = ""
+		havingby_stmt = ""
 	
 	#if time dimension not selected
 	# if not __timeDimensionHierarchy:
@@ -88,7 +89,7 @@ def getResults():
 		select_stmt = "select t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, `sales_fact` f "
 		where_stmt = "where t.time_key = f.time_key "
-		groupby_stmt = "group by t."+__timeDimensionHierarchy+" order by t."+__timeDimensionHierarchy
+		groupby_stmt = "group by t."+__timeDimensionHierarchy
 		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select t."+__timeDimensionHierarchy+", sum(f.dollar_sales) "+
@@ -98,7 +99,8 @@ def getResults():
 		#		" order by t."+__timeDimensionHierarchy)
 		if action == "slice":
 			if time:
-			havingby_stmt = "Having by t."+time+ "="+ havingby
+				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + "or" + timehavingby2 + "\)" 
 	elif not __timeDimensionHierarchy and not __storeDimensionHierarchy:
@@ -113,7 +115,7 @@ def getResults():
 		select_stmt = "select p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, `sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key "
-		groupby_stmt = "group by p."+__productDimensionHierarchy+" order by p."+__productDimensionHierarchy
+		groupby_stmt = "group by p."+__productDimensionHierarchy
 		
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) "+
@@ -123,7 +125,8 @@ def getResults():
 		#	" order by s."+__storeDimensionHierarchy)
 		if action == "slice":
 			if product:
-			havingby_stmt = "Having by p."+product+ "="+ havingby
+				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)" 
 	elif not __timeDimensionHierarchy and not __productDimensionHierarchy:
@@ -138,8 +141,8 @@ def getResults():
 		select_stmt = "select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Store s, `sales_fact` f "
 		where_stmt = "where s.store_key = f.store_key "
-		groupby_stmt = "group by s."+__storeDimensionHierarchy+" order by s."+__storeDimensionHierarchy
-		
+		groupby_stmt = "group by s."+__storeDimensionHierarchy
+		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) "+
 		#	"AS total_sales from Store s,`sales_fact` f "+
@@ -148,7 +151,8 @@ def getResults():
 		#	" order by s."+__storeDimensionHierarchy)
 		if action == "slice":
 			if store:
-			havingby_stmt = "Having by s."+store+ "="+ havingby
+				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = "Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)" 
 	elif not __timeDimensionHierarchy:
@@ -171,8 +175,8 @@ def getResults():
 		select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Store s,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key AND s.store_key = f.store_key "
-		groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
-		
+		groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) "+
 		#	"AS total_sales from Product p, Store s,`sales_fact` f "+
@@ -182,12 +186,13 @@ def getResults():
 		#	" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
 		if action == "slice":
 			if product:
-			havingby_stmt = "Having by p."+product+ "="+ havingby
+				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 			elif store:
-			havingby_stmt = "Having by s."+store+ "="+ havingby
+				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)" 
-			AND "Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)"
+			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)"
 	elif not __storeDimensionHierarchy:
 		if action == "rollup":
 			if product:
@@ -206,8 +211,8 @@ def getResults():
 		select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Time t,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key AND t.time_key = f.time_key "
-		groupby_stmt = "group by p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy
-		
+		groupby_stmt = "group by p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy
+		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) "+
 		#		"AS total_sales from Product p, Time t,`sales_fact` f "+
@@ -217,12 +222,13 @@ def getResults():
 		#		" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy)
 		if action == "slice":
 			if product:
-			havingby_stmt = "Having by p."+product+ "="+ havingby
+				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 			elif time:
-			havingby_stmt = "Having by t."+time+ "="+ havingby
+				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		if action == "dice":
-			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)" 
-			AND "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"
+			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"+" AND Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"
 	elif not __productDimensionHierarchy:
 		if action == "rollup":
 			if time:
@@ -241,8 +247,8 @@ def getResults():
 		select_stmt = "select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, Store s,`sales_fact` f "
 		where_stmt = "where s.store_key = f.store_key AND t.time_key = f.time_key "
-		groupby_stmt = "group by s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy
-		
+		groupby_stmt = "group by s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy
+		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) "+
 		#		"AS total_sales from Time t, Store s,`sales_fact` f "+
@@ -252,12 +258,13 @@ def getResults():
 		#		" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy)
 		if action == "slice":
 			if time:
-			havingby_stmt = "Having by t."+time+ "="+ havingby
+				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 			elif store:
-			havingby_stmt = "Having by s."+store+ "="+ havingby
+				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		if action == "dice":
-			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)" 
-			AND "Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"
+			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"
 	else:
 		if action == "rollup":
 			if product:
@@ -282,8 +289,8 @@ def getResults():
 		select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Time t, Store s,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key "+"AND s.store_key = f.store_key "+"AND t.time_key = f.time_key "
-		groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
-		
+		groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy
+		havingby_stmt = ""
 			
 			
 			#cur.execute("select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) "+
@@ -295,15 +302,16 @@ def getResults():
 			#	" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
 		if action == "slice":
 			if product:
-			havingby_stmt = "Having by p."+product+ "="+ havingby
+				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 			elif store:
-			havingby_stmt = "Having by s."+store+ "="+ havingby
+				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 			elif time:
-			havingby_stmt = "Having by t."+time+ "="+ havingby
+				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
+				groupby_stmt += havingby_stmt
 		if action == "dice":
-			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)" 
-			AND "Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"
-			AND "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"
+			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"+" AND Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"
 	print(select_stmt + from_stmt + where_stmt + groupby_stmt)
 	
 	cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
