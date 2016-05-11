@@ -1,8 +1,10 @@
+
 $(document).ready(function(){
   var q = "";
   var q1 = "";
   var q2 = "";
   var q3 = "";
+  
 	// $("#tester").click(function(){
 	// 	$("#time_text").hide();
 	// });
@@ -18,7 +20,8 @@ $(document).ready(function(){
     
     q += $(this).parents(".btn-group").find('.dropdownValue').val();
     //alert($(this).parents(".btn-group").find('.dropdownValue').val());
-    
+    global_list.push($(this).parents(".btn-group").find('.dropdownValue').val());
+       
     q += "&";
 	});
 

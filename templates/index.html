@@ -15,10 +15,12 @@
     </script>
 
     <script type="text/javascript" src="../static/js/script.js"></script>
+     <script type="text/javascript" src="../static/js/ops_script.js"></script>
     <script type="text/javascript" src="{{ url_for('static',filename='css/script.css') }}"></script>
 
     <script type=text/javascript>
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+      var global_list = [];
     </script>
 
     <link href="{{ url_for('static',filename='css/style.css') }}" rel=
