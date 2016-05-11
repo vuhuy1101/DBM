@@ -1,10 +1,16 @@
 
 var q4 = "";
+var q5 = "";
+var q6 = "";
+var q7 = "";
+var q = "";
 $(document).ready(function(){
-  var q = "";
+
   var q1 = "";
   var q2 = "";
   var q3 = "";
+  var temp1 = "";
+  var temp2 = "";
   
 	// $("#tester").click(function(){
 	// 	$("#time_text").hide();
@@ -43,23 +49,26 @@ $(document).ready(function(){
       }
     }
     
-    if($(this).attr('name') == "timeAttr"){
-      q4 = "&val0=" + $(this).val();
-     }
-    else if($(this).attr('name') == "productAttr"){
-       q4 = "&val0=" + $(this).val();
-    }
-    else if($(this).attr('name') == "storeAttr"){
-       q4 = "&val0=" + $(this).val();
-    }
-    
-    
     $("select").click(function(){
        q3 = $(this).find('option:selected').attr('value');
     });
     
-    q = q1 + q2 + q3 + q4;
-  });
+   /* $('#time_box').click(function(){
+      $('#time_box').toggle(this.checked);
+      q3 = $('#time_box').val();
+    });
+    $('#product_box').click(function(){
+      $('#product_box').toggle(this.checked);
+      q3 = $('#product_box').val();
+    });
+    $('#store_box').click(function(){
+      $('#store_box').toggle(this.checked);
+      q3 = $('#store_box').val();
+    });
+    */
+
+    q = q1 + q2 + q3;
+  });  
   
  
 
@@ -110,6 +119,24 @@ $(document).ready(function(){
 
 
    $('#submit').click(function(){
+    
+    if($("#timeAttr0").val() != "")
+      q4 = "&val0=" + $("#timeAttr0").val();
+    if($("#productAttr0").val() != "")
+      q4 = "&val0=" + $("#productAttr0").val();
+    if($("#storeAttr0").val() != "")
+      q4 = "&val0=" + $("#storeAttr0").val();   
+    
+    //time = 1,2 ; product = 3,4 ; store = 5,6
+    if($("#timeAttr1").val() != "" && $("#timeAttr2").val() != "")
+      q5 = "&val1=" + $("#timeAttr1").val() + "&val2=" + $("#timeAttr2").val();
+    if($("#productAttr1").val() != "" && $("#productAttr2").val() != "")
+      q6 = "&val3=" + $("#productAttr1").val() + "&val4=" + $("#productAttr2").val();
+    if($("#storeAttr1").val() != "" && $("#storeAttr2").val() != "")
+      q7 = "&val5=" + $("#storeAttr1").val() + "&val6=" + $("#storeAttr2").val();
+      
+    
+    q += (q4 + q5 + q6 + q7);
     alert(q);
     $.getJSON('/getResults', q, function (ret) {
         

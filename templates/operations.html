@@ -265,7 +265,7 @@
 				<option value="category">Category</option>
 				<option value="department">Department</option>
 			</select>
-			<p>Enter value: <input name="productAttr" style='display:none;' type="text" id="productAttr0"></p>
+			<p>Enter value: <input id="productAttr0" style='display:none;' type="text" name="productAttr0"></p>
 		</div>
 		
 		
@@ -286,7 +286,7 @@
 				<option value="district">District</option>
 				<option value="region">Region</option>
 			</select>
-			<p>Enter value: <input name="storeAttr" style='display:none;' type="text" id="storeAttr0"></p>
+			<p>Enter value: <input id="storeAttr0" style='display:none;' type="text" name="storeAttr0"></p>
 
 		</div>
 			
@@ -306,13 +306,74 @@
 				<option value="fiscal_period">Fiscal Period</option>
 				<option value="year">Year</option>
 			</select>
-			<p >Enter value: <input name="timeAttr" style='display:none;' type="text" id="timeAttr0"></p> 
+			<p >Enter value: <input id="timeAttr0" style='display:none;' type="text" name="timeAttr0"></p> 
 			
 		</div>
 	</div>
 	
 	<div id='diceOption' style='display:none;'> 
-		 
+		 <p>Choose a dimension:</p>
+		<div class="col-xs-2">
+			<div class="checkbox">
+				<label>
+				<input id="product_box" type="checkbox" name="dimension" value="Product" onclick="dice('productAttr')">Product 
+				</label>
+			</div>
+
+			<select class="form-control" class="productAttr" name="productAttr">
+				<option value="description">description</option>
+				<option value="brand">Brand</option>
+				<option value="subcategory">Subcategory</option>
+				<option value="category">Category</option>
+				<option value="department">Department</option>
+			</select>
+			<p>Enter value1: <input id="productAttr1" name="productAttr1" style='display:block;' type="text">
+			Enter value2: <input id="productAttr2" name="productAttr2" style='display:block;' type="text"></p>
+		</div>
+		
+		
+		<div class="col-xs-2">
+			<div class="checkbox">
+				<label>
+				<input id="store_box" type="checkbox" name="dimension" value="Store" onclick="dice('storeAttr')">Store 
+				</label>
+			</div>
+
+			<select class="form-control" class="storeAttr" name="storeAttr">
+				<option value="store_number">Store Number</option>
+				<option value="street_address">Street Address</option>
+				<option value="city">City</option>
+				<option value="county">County</option>
+				<option value="state">State</option>
+				<option value="zip">Zipcode</option>
+				<option value="district">District</option>
+				<option value="region">Region</option>
+			</select>
+			<p>Enter value1: <input id="storeAttr1" name="storeAttr1" style='display:block;' type="text">
+			Enter value2: <input id="storeAttr2" name="storeAttr2" style='display:block;' type="text"></p>
+
+		</div>
+			
+		<div class="col-xs-2">
+			<div class="checkbox">
+				<label>
+				<input id="time_box" type="checkbox" name="dimension" value="Time" onclick="dice('timeAttr')">Time
+				</label>
+			</div>
+
+			<select class="form-control" class="timeAttr" name="timeAttr">
+				<option value="date">Date</option>
+				<option value="day_of_week">Date of Week</option>
+				<option value="day_number_in_month">Day Number in Month</option>
+				<option value="month">Month</option>
+				<option value="quarter">Quarter</option>
+				<option value="fiscal_period">Fiscal Period</option>
+				<option value="year">Year</option>
+			</select>
+			<p>Enter value1: <input id="timeAttr1" name="timeAttr1" style='display:block;' type="text">
+			Enter value2: <input id="timeAttr2" name="timeAttr2" style='display:block;' type="text"></p> 
+			
+		</div>
 	</div> 
 	
 <input type="submit" id="submit" value="Submit" class="btn btn-info">

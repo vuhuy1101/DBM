@@ -102,7 +102,7 @@ def getResults():
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + "or" + timehavingby2 + "\)" 
+			havingby_stmt = " Having ( t."+time+ " = "+ timehavingby1 + " or t."+time+"=" + timehavingby2 + ")" 
 		elif action == "addDim":
 			if time: 
 				select_stmt = "select t."+time+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
@@ -371,7 +371,7 @@ def getResults():
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"
+			havingby_stmt = " Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\) AND Having \( s."+store+ "='"+ storehavingby1 + "' or '" + storehavingby2 + "'\)"
 		elif action == "addDim":
 			if time: 
 				select_stmt = "select t."+time+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
@@ -480,9 +480,9 @@ def getResults():
 				where_stmt = "where p.product_key = f.product_key "+"AND t.time_key = f.time_key "
 				groupby_stmt = "group by p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy
 			
-	
-	print(select_stmt + from_stmt + where_stmt + groupby_stmt)
-	cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
+	print('test')
+	print(select_stmt + from_stmt + where_stmt + groupby_stmt + havingby_stmt)
+	cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt + havingby_stmt)
 	results = cur.fetchall()
 	field_names = [str(i[0]) for i in cur.description]
 	print(field_names)

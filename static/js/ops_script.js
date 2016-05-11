@@ -143,7 +143,7 @@ function slice(name){
 }
 
 function dice(name){
-	var list = document.getElementsByName(name)[4].getElementsByTagName("option");
+	var list = document.getElementsByName(name)[5].getElementsByTagName("option");
 	var i,j;
 	var thArray = [];
 	var pos = -1;
@@ -184,8 +184,11 @@ function update(c1, c2, c3, index){
 		class3[i].style.display = "none";
 		
 	if(index == 4){
-		document.getElementsByName(c1)[index+1].style.display = "block";
+		document.getElementsByName(c1+"0")[0].style.display = "block";
+		document.getElementsByName(c2+"0")[0].style.display = "none";
+		document.getElementsByName(c3+"0")[0].style.display = "none";
 	}
+
 	
 }
 	
