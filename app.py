@@ -9,9 +9,10 @@ import MySQLdb
 from types import *
 
 app = Flask(__name__)
-__timeDimensionHierarchy = ''
-__productDimensionHierarchy = ''
-__storeDimensionHierarchy = ''
+__timeDimensionHierarchy = ""
+__productDimensionHierarchy = ""
+__storeDimensionHierarchy = ""
+action = ""
 
 @app.route('/')
 def hello():
@@ -37,20 +38,22 @@ def getResults():
 	#	__productDimensionHierarchy = request.form['conceptProduct']
 	#if isinstance(request.form['conceptStore'], basestring):
 	#	__storeDimensionHierarchy = request.form['conceptStore']
-	if request.args.get('action') == "addDim":
+	if request.args.get('action') == "rollup":
 		time = request.args.get('conceptTime')
 		product = request.args.get('conceptProduct')
 		store = request.args.get('conceptStore')
+		global action
 		action = request.args.get('action')
+	#elif request.args.get('action') is not None:
 	else:
 		global __timeDimensionHierarchy 
 		global __productDimensionHierarchy
 		global __storeDimensionHierarchy
+		global action
 		__timeDimensionHierarchy = request.args.get('conceptTime')
 		__productDimensionHierarchy = request.args.get('conceptProduct')
 		__storeDimensionHierarchy = request.args.get('conceptStore')
-
-	print("results = " + __timeDimensionHierarchy)
+		action = ""
 	
 	#if time dimension not selected
 	# if not __timeDimensionHierarchy:
@@ -66,6 +69,7 @@ def getResults():
 		cur.execute("select 'Please select a concept hierarchy'")
 
 	elif not __productDimensionHierarchy and not __storeDimensionHierarchy: 
+		print(1)
 		select_stmt = "select t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, `sales_fact` f "
 		where_stmt = "where t.time_key = f.time_key "
@@ -79,6 +83,7 @@ def getResults():
 		#		" order by t."+__timeDimensionHierarchy)
 
 	elif not __timeDimensionHierarchy and not __storeDimensionHierarchy:
+		print(2)
 		select_stmt = "select p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, `sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key "
@@ -91,7 +96,16 @@ def getResults():
 		#	"group by s."+__storeDimensionHierarchy+
 		#	" order by s."+__storeDimensionHierarchy)
 	elif not __timeDimensionHierarchy:
-		select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales"
+		
+		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+			elif store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
+		
+		select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Store s,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key AND s.store_key = f.store_key "
 		groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
@@ -104,6 +118,7 @@ def getResults():
 		#	"group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+
 		#	" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
 	elif not __storeDimensionHierarchy:
+		print(4)
 		select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Time t,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key AND t.time_key = f.time_key "
@@ -117,6 +132,7 @@ def getResults():
 		#		"group by p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+
 		#		" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy)
 	elif not __productDimensionHierarchy:
+		print(5)
 		select_stmt = "select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, Store s,`sales_fact` f "
 		where_stmt = "where s.store_key = f.store_key AND t.time_key = f.time_key "
@@ -147,6 +163,9 @@ def getResults():
 			#	"AND t.time_key = f.time_key "+
 			#	"group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+
 			#	" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
+	
+	print(123123123)
+	print(select_stmt + from_stmt + where_stmt + groupby_stmt)
 	
 	cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 	results = cur.fetchall()
