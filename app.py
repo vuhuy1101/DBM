@@ -14,6 +14,7 @@ __productDimensionHierarchy = ""
 __storeDimensionHierarchy = ""
 action = ""
 
+
 @app.route('/')
 def hello():
 	return render_template('index.html')
@@ -42,6 +43,13 @@ def getResults():
 		time = request.args.get('conceptTime')
 		product = request.args.get('conceptProduct')
 		store = request.args.get('conceptStore')
+		havingby = request.args.get('val0')
+		timehavingby1 = request.args.get('val1')
+		timehavingby2 = request.args.get('val2')
+		producthavingby1 = request.args.get('val3')
+		producthavingby2 = request.args.get('val4')
+		storehavingby1 = request.args.get('val5')
+		storehavingby2 = request.args.get('val6')
 		global action
 		action = request.args.get('action')
 	#elif request.args.get('action') is not None:
@@ -81,14 +89,18 @@ def getResults():
 		from_stmt = "from Time t, `sales_fact` f "
 		where_stmt = "where t.time_key = f.time_key "
 		groupby_stmt = "group by t."+__timeDimensionHierarchy+" order by t."+__timeDimensionHierarchy
-		
+		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select t."+__timeDimensionHierarchy+", sum(f.dollar_sales) "+
 		#		"AS total_sales from Time t, `sales_fact` f "+
 		#		"where t.time_key = f.time_key "+
 		#		"group by t."+__timeDimensionHierarchy+
 		#		" order by t."+__timeDimensionHierarchy)
-
+		if action == "slice":
+			if time:
+			havingby_stmt = "Having by t."+time+ "="+ havingby
+		elif action == "dice":
+			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + "or" + timehavingby2 + "\)" 
 	elif not __timeDimensionHierarchy and not __storeDimensionHierarchy:
 		if action == "rollup":
 			if product:
@@ -109,6 +121,11 @@ def getResults():
 		#	"where s.store_key = f.store_key "+
 		#	"group by s."+__storeDimensionHierarchy+
 		#	" order by s."+__storeDimensionHierarchy)
+		if action == "slice":
+			if product:
+			havingby_stmt = "Having by p."+product+ "="+ havingby
+		elif action == "dice":
+			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)" 
 	elif not __timeDimensionHierarchy and not __productDimensionHierarchy:
 		if action == "rollup":
 			if store:
@@ -129,6 +146,11 @@ def getResults():
 		#	"where s.store_key = f.store_key "+
 		#	"group by s."+__storeDimensionHierarchy+
 		#	" order by s."+__storeDimensionHierarchy)
+		if action == "slice":
+			if store:
+			havingby_stmt = "Having by s."+store+ "="+ havingby
+		elif action == "dice":
+			havingby_stmt = "Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)" 
 	elif not __timeDimensionHierarchy:
 		
 		if action == "rollup":
@@ -158,6 +180,14 @@ def getResults():
 		#	"AND s.store_key = f.store_key "+
 		#	"group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+
 		#	" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
+		if action == "slice":
+			if product:
+			havingby_stmt = "Having by p."+product+ "="+ havingby
+			elif store:
+			havingby_stmt = "Having by s."+store+ "="+ havingby
+		elif action == "dice":
+			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)" 
+			AND "Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)"
 	elif not __storeDimensionHierarchy:
 		if action == "rollup":
 			if product:
@@ -185,6 +215,14 @@ def getResults():
 		#		"AND t.time_key = f.time_key "+
 		#		"group by p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+
 		#		" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy)
+		if action == "slice":
+			if product:
+			havingby_stmt = "Having by p."+product+ "="+ havingby
+			elif time:
+			havingby_stmt = "Having by t."+time+ "="+ havingby
+		if action == "dice":
+			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)" 
+			AND "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"
 	elif not __productDimensionHierarchy:
 		if action == "rollup":
 			if time:
@@ -212,9 +250,14 @@ def getResults():
 		#		"AND t.time_key = f.time_key "+
 		#		"group by s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+
 		#		" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy)
-
-	
-
+		if action == "slice":
+			if time:
+			havingby_stmt = "Having by t."+time+ "="+ havingby
+			elif store:
+			havingby_stmt = "Having by s."+store+ "="+ havingby
+		if action == "dice":
+			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)" 
+			AND "Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"
 	else:
 		if action == "rollup":
 			if product:
@@ -250,7 +293,17 @@ def getResults():
 			#	"AND t.time_key = f.time_key "+
 			#	"group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+
 			#	" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy)
-	
+		if action == "slice":
+			if product:
+			havingby_stmt = "Having by p."+product+ "="+ havingby
+			elif store:
+			havingby_stmt = "Having by s."+store+ "="+ havingby
+			elif time:
+			havingby_stmt = "Having by t."+time+ "="+ havingby
+		if action == "dice":
+			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)" 
+			AND "Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"
+			AND "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"
 	print(select_stmt + from_stmt + where_stmt + groupby_stmt)
 	
 	cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
