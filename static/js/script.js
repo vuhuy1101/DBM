@@ -1,4 +1,5 @@
 
+var q4 = "";
 $(document).ready(function(){
   var q = "";
   var q1 = "";
@@ -42,11 +43,22 @@ $(document).ready(function(){
       }
     }
     
+    if($(this).attr('name') == "timeAttr"){
+      q4 = "&val0=" + $(this).val();
+     }
+    else if($(this).attr('name') == "productAttr"){
+       q4 = "&val0=" + $(this).val();
+    }
+    else if($(this).attr('name') == "storeAttr"){
+       q4 = "&val0=" + $(this).val();
+    }
+    
+    
     $("select").click(function(){
        q3 = $(this).find('option:selected').attr('value');
     });
     
-    q = q1 + q2 + q3;
+    q = q1 + q2 + q3 + q4;
   });
   
  
@@ -98,6 +110,7 @@ $(document).ready(function(){
 
 
    $('#submit').click(function(){
+    alert(q);
     $.getJSON('/getResults', q, function (ret) {
         
         //alert('JSON got: ' + JSON.stringify(ret));
