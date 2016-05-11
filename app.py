@@ -73,6 +73,10 @@ def getResults():
 			if time:
 				global __timeDimensionHierarchy
 				__timeDimensionHierarchy = time
+		elif action == "drilldown":
+			if time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
 		select_stmt = "select t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Time t, `sales_fact` f "
 		where_stmt = "where t.time_key = f.time_key "
@@ -87,6 +91,10 @@ def getResults():
 
 	elif not __timeDimensionHierarchy and not __storeDimensionHierarchy:
 		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+		elif action == "drilldown":
 			if product:
 				global __productDimensionHierarchy
 				__productDimensionHierarchy = product
@@ -106,10 +114,14 @@ def getResults():
 			if store:
 				global __storeDimensionHierarchy
 				__storeDimensionHierarchy = store
-		select_stmt = "select p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-		from_stmt = "from Product p, `sales_fact` f "
-		where_stmt = "where p.product_key = f.product_key "
-		groupby_stmt = "group by p."+__productDimensionHierarchy+" order by p."+__productDimensionHierarchy
+		elif action == "drilldown":
+			if store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
+		select_stmt = "select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
+		from_stmt = "from Store s, `sales_fact` f "
+		where_stmt = "where s.store_key = f.store_key "
+		groupby_stmt = "group by s."+__storeDimensionHierarchy+" order by s."+__storeDimensionHierarchy
 		
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) "+
@@ -120,6 +132,13 @@ def getResults():
 	elif not __timeDimensionHierarchy:
 		
 		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+			elif store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
+		elif action == "drilldown":
 			if product:
 				global __productDimensionHierarchy
 				__productDimensionHierarchy = product
@@ -147,6 +166,13 @@ def getResults():
 			elif time:
 				global __timeDimensionHierarchy
 				__timeDimensionHierarchy = time
+		if action == "drilldown":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+			elif time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
 		select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 		from_stmt = "from Product p, Time t,`sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key AND t.time_key = f.time_key "
@@ -161,6 +187,13 @@ def getResults():
 		#		" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy)
 	elif not __productDimensionHierarchy:
 		if action == "rollup":
+			if time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
+			elif store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
+		if action == "drilldown":
 			if time:
 				global __timeDimensionHierarchy
 				__timeDimensionHierarchy = time
@@ -184,6 +217,16 @@ def getResults():
 
 	else:
 		if action == "rollup":
+			if product:
+				global __productDimensionHierarchy
+				__productDimensionHierarchy = product
+			elif store:
+				global __storeDimensionHierarchy
+				__storeDimensionHierarchy = store
+			elif time:
+				global __timeDimensionHierarchy
+				__timeDimensionHierarchy = time
+		if action == "drilldown":
 			if product:
 				global __productDimensionHierarchy
 				__productDimensionHierarchy = product
