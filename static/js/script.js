@@ -121,13 +121,13 @@ $(document).ready(function(){
    $('#submit').click(function(){
     
     if($("#store_box").is(':checked')){
-      alert($('#_store').val());
+      //alert($('#_store').val());
       q += ("&conceptStore=" + $('#_store').val());
      }
     
     if($("#product_box").is(':checked')){
       if($('select').attr('name') == 'productAttr'){
-        alert($('#_product').val());
+        //alert($('#_product').val());
         q += ("&conceptProduct=" + $('#_product').val());
       }
      }
@@ -135,7 +135,7 @@ $(document).ready(function(){
 
     if($("#time_box").is(':checked')){
       if($('select').attr('name') == 'timeAttr'){
-        alert($('#_time').val());
+        //alert($('#_time').val());
         q += ("&conceptTime=" + $('#_time').val());
       }
      }
@@ -161,6 +161,8 @@ $(document).ready(function(){
       
     
     q += (q4 + q5 + q6 + q7);
+    
+        
     alert(q);
     $.getJSON('/getResults', q, function (ret) {
         

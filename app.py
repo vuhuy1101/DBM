@@ -30,7 +30,7 @@ def loadOps():
 
 @app.route('/getResults')
 def getResults():
-	db =  MySQLdb.connect("127.0.0.1","root","157b","GroceryDB")
+	db =  MySQLdb.connect("127.0.0.1","root","","GroceryDB")
 	#db =  MySQLdb.connect("127.0.0.1","root","0309","GroceryDB")
 	cur = db.cursor()
 
@@ -105,7 +105,7 @@ def getResults():
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = " Having ( t."+time+ " = "+ timehavingby1 + " or t."+time+"=" + timehavingby2 + ")" 
+				havingby_stmt = (" Having (t."+time+ " = '"+ timehavingby1 + "' OR t."+time+ " = '" + timehavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)
@@ -156,7 +156,7 @@ def getResults():
 				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)" 
+			havingby_stmt = (" Having (p."+product+ " = '"+ producthavingby1 + "' OR p."+product+ " = '" + producthavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)
@@ -202,7 +202,7 @@ def getResults():
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = "Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)" 
+			havingby_stmt = (" Having (s."+store+ " = '"+ storehavingby1 + "' OR s."+store+ " = '" + storehavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)
@@ -259,8 +259,8 @@ def getResults():
 			elif store:
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
-		elif action == "dice":
-			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)"
+		elif action == "dice":		
+			havingby_stmt = (" Having (p."+product+" = '"+ producthavingby1 + "' OR p."+product+" = '" + producthavingby2 + "') AND (s." + store +" = '"+ storehavingby1 + "' OR s."+store+ " = '"+ storehavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)
@@ -327,7 +327,7 @@ def getResults():
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"+" AND Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"
+			havingby_stmt = (" Having (p."+product+" = '"+ producthavingby1 + "' OR p."+product+" = '" + producthavingby2 + "') AND (t." + time +" = '"+ timehavingby1 + "' OR t."+time+ " = '"+ timehavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)
@@ -394,7 +394,7 @@ def getResults():
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		elif action == "dice":
-			havingby_stmt = " Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\) AND Having \( s."+store+ "='"+ storehavingby1 + "' or '" + storehavingby2 + "'\)"
+			havingby_stmt = (" Having (t."+time+" = '"+ timehavingby1 + "' OR t."+time+" = '" + timehavingby2 + "') AND (s." + store +" = '"+ storehavingby1 + "' OR s."+store+ " = '"+ storehavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)
@@ -472,7 +472,7 @@ def getResults():
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
 				groupby_stmt += havingby_stmt
 		if action == "dice":
-			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"+" AND Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"
+			havingby_stmt = (" Having (p."+product+" = '"+ producthavingby1 + "' OR p."+product+" = '" + producthavingby2 + "') AND (s." + store +" = '"+ storehavingby1 + "' OR s."+store+ " = '"+ storehavingby2 + "' ) AND (t." + time +" = '"+ timehavingby1 + "' OR t."+time+ " = '"+ timehavingby2 + "' )")
 		elif action == "addDim":
 			if time: 
 				query_adder += (", t."+time)

@@ -19,7 +19,6 @@ function add_dim(name){
 		for(j = 0; j < list.length; j++){
 			if(list[j].value == thArray[i]){
 				pos = j;
-				
 			}
 		}
 		if(pos > -1){  
