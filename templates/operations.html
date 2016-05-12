@@ -73,7 +73,7 @@
 		<div class="col-xs-2">
 			<div class="radio">
 				<label>
-				<input id="Product" type="radio" name="dimension" value="Product" onclick="remove_dim('productAttr');update('productAttr','storeAttr','timeAttr',1);">Product 
+				<input id="Product" type="radio" name="dimension" value="Product" onclick="update('productAttr','storeAttr','timeAttr',1);">Product 
 				</label>
 			</div>
 
@@ -91,7 +91,7 @@
 		<div class="col-xs-2">
 			<div class="radio">
 				<label>
-				<input id="Store" type="radio" name="dimension" value="Store" onclick="remove_dim('storeAttr');update('storeAttr','productAttr','timeAttr',1)">Store 
+				<input id="Store" type="radio" name="dimension" value="Store" onclick="update('storeAttr','productAttr','timeAttr',1)">Store 
 				</label>
 			</div>
 
@@ -111,7 +111,7 @@
 		<div class="col-xs-2">
 			<div class="radio">
 				<label>
-				<input id="Time" type="radio" name="dimension" value="Time" onclick="remove_dim('timeAttr');update('timeAttr','storeAttr','productAttr',1)">Time
+				<input id="Time" type="radio" name="dimension" value="Time" onclick="update('timeAttr','storeAttr','productAttr',1)">Time
 				</label>
 			</div>
 
@@ -320,7 +320,7 @@
 				</label>
 			</div>
 
-			<select class="form-control" class="productAttr" name="productAttr">
+			<select class="form-control" class="productAttr" id="_product" name="productAttr">
 				<option value="description">description</option>
 				<option value="brand">Brand</option>
 				<option value="subcategory">Subcategory</option>
@@ -339,7 +339,7 @@
 				</label>
 			</div>
 
-			<select class="form-control" class="storeAttr" name="storeAttr">
+			<select class="form-control" class="storeAttr" id="_store" name="storeAttr">
 				<option value="store_number">Store Number</option>
 				<option value="street_address">Street Address</option>
 				<option value="city">City</option>
@@ -361,7 +361,7 @@
 				</label>
 			</div>
 
-			<select class="form-control" class="timeAttr" name="timeAttr">
+			<select class="form-control" class="timeAttr" id="_time" name="timeAttr">
 				<option value="date">Date</option>
 				<option value="day_of_week">Date of Week</option>
 				<option value="day_number_in_month">Day Number in Month</option>
