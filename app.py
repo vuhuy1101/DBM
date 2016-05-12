@@ -13,6 +13,7 @@ __timeDimensionHierarchy = ""
 __productDimensionHierarchy = ""
 __storeDimensionHierarchy = ""
 action = ""
+query_adder = ""
 
 
 @app.route('/')
@@ -29,7 +30,7 @@ def loadOps():
 
 @app.route('/getResults')
 def getResults():
-	db =  MySQLdb.connect("127.0.0.1","root","","GroceryDB")
+	db =  MySQLdb.connect("127.0.0.1","root","157b","GroceryDB")
 	#db =  MySQLdb.connect("127.0.0.1","root","0309","GroceryDB")
 	cur = db.cursor()
 
@@ -58,6 +59,8 @@ def getResults():
 		global __productDimensionHierarchy
 		global __storeDimensionHierarchy
 		global action
+		global query_adder
+		query_adder = ""
 		__timeDimensionHierarchy = request.args.get('conceptTime')
 		__productDimensionHierarchy = request.args.get('conceptProduct')
 		__storeDimensionHierarchy = request.args.get('conceptStore')
@@ -105,19 +108,27 @@ def getResults():
 			havingby_stmt = " Having ( t."+time+ " = "+ timehavingby1 + " or t."+time+"=" + timehavingby2 + ")" 
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key "
-				groupby_stmt = "group by t."+__timeDimensionHierarchy+", t."+time+" order by t."+__timeDimensionHierarchy+", t."+time
+				query_adder += (", t."+time)
+				select_stmt = "select t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by t."+__timeDimensionHierarchy+ query_adder + " order by t."+__timeDimensionHierarchy+query_adder
 			elif product: 
-				select_stmt = "select p."+product+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Product p, `sales_fact` f "
-				where_stmt = " where t.time_key = f.time_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by t."+__timeDimensionHierarchy+", p."+product+" order by t."+__timeDimensionHierarchy+", p."+product
+				query_adder += (", p."+product)
+				# select_stmt = "select p."+product+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
+				# from_stmt = "from Time t, Product p, `sales_fact` f "
+				# where_stmt = " where t.time_key = f.time_key AND p.product_key = f.product_key "
+				# groupby_stmt = "group by t."+__timeDimensionHierarchy+", p."+product+" order by t."+__timeDimensionHierarchy+", p."+product
+				select_stmt = "select t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by t."+ __timeDimensionHierarchy + query_adder + " order by t."+__timeDimensionHierarchy + query_adder
+
 			elif store: 
-				select_stmt = "select s."+store+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, store s, `sales_fact` f "
-				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key "
+				query_adder += (", s."+store)
+				select_stmt = "select t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, store s, Product p, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
 				groupby_stmt = "group by t."+__timeDimensionHierarchy+", s."+store+" order by t."+__timeDimensionHierarchy+", s."+store
 				
 	elif not __timeDimensionHierarchy and not __storeDimensionHierarchy:
@@ -133,7 +144,7 @@ def getResults():
 		from_stmt = "from Product p, `sales_fact` f "
 		where_stmt = "where p.product_key = f.product_key "
 		groupby_stmt = "group by p."+__productDimensionHierarchy
-		
+		havingby_stmt = ""
 		#cur.execute(select_stmt + from_stmt + where_stmt + groupby_stmt)
 		#cur.execute("select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) "+
 		#	"AS total_sales from Store s,`sales_fact` f "+
@@ -148,20 +159,23 @@ def getResults():
 			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)" 
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Product p, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by t."+time+", p."+__productDimensionHierarchy+" order by t."+time+", p."+__productDimensionHierarchy
+				query_adder += (", t."+time)
+				select_stmt = "select p."+__productDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by p."+__productDimensionHierarchy+ query_adder +" order by p."+__productDimensionHierarchy + query_adder
 			elif product: 
-				select_stmt = "select p."+product+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Product p, `sales_fact` f "
-				where_stmt = " where t.time_key = f.time_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by p."+__productDimensionHierarchy+", p."+product+" order by p."+__productDimensionHierarchy+", p."+product
+				query_adder += (", p."+product)
+				select_stmt = "select p."+__productDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by p."+__productDimensionHierarchy+ query_adder +" order by p."+__productDimensionHierarchy + query_adder
 			elif store: 
-				select_stmt = "select s."+store+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Product p, Store s, `sales_fact` f "
-				where_stmt = " where p.product_key = f.product_key AND s.store_key = f.store_key "
-				groupby_stmt = "group by p."+__productDimensionHierarchy+", s."+store+" order by p."+__productDimensionHierarchy+", s."+store
+				query_adder += (", s."+store)
+				select_stmt = "select p."+__productDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by p."+__productDimensionHierarchy+ query_adder +" order by p."+__productDimensionHierarchy + query_adder
 				
 	elif not __timeDimensionHierarchy and not __productDimensionHierarchy:
 		if action == "rollup":
@@ -191,20 +205,23 @@ def getResults():
 			havingby_stmt = "Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)" 
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Store s, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND s.store_key = f.store_key "
-				groupby_stmt = "group by t."+time+", s."+__storeDimensionHierarchy+" order by t."+time+", s."+__storeDimensionHierarchy
+				query_adder += (", t."+time)
+				select_stmt = "select s."+__storeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+ query_adder+" order by s."+__storeDimensionHierarchy + query_adder
 			elif product: 
-				select_stmt = "select p."+product+", s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Store s, Product p, `sales_fact` f "
-				where_stmt = " where s.store_key = f.store_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by p."+product+", s."+__storeDimensionHierarchy+" order by p."+product+", s."+__storeDimensionHierarchy
-			elif store: 
-				select_stmt = "select s."+store+", s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Store s, `sales_fact` f "
-				where_stmt = " where s.store_key = f.store_key "
-				groupby_stmt = "group by s."+__storeDimensionHierarchy+", s."+store+" order by s."+__storeDimensionHierarchy+", s."+store
+				query_adder += (", p."+product)
+				select_stmt = "select s."+__storeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+ query_adder+" order by s."+__storeDimensionHierarchy + query_adder
+			elif store:
+			 	query_adder += (", s."+store)
+				select_stmt = "select s."+__storeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+ query_adder+" order by s."+__storeDimensionHierarchy + query_adder
 				
 	elif not __timeDimensionHierarchy:
 		
@@ -246,20 +263,23 @@ def getResults():
 			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + "or" + producthavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + "or" + storehavingby2 + "\)"
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Store s, Product p, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by t."+time+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by t."+time+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+				query_adder += (", t."+time)
+				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder + ", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder +" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 			elif product: 
-				select_stmt = "select p."+product+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Store s, Product p, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by p."+product+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by p."+product+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+				query_adder += (", p."+product)
+				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder + ", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder +" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 			elif store: 
-				select_stmt = "select s."+store+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Store s, Product p, `sales_fact` f "
-				where_stmt = "where s.store_key = f.store_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by s."+store+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by s."+store+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+				query_adder += (", s."+store)
+				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder + ", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder +" order by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 		elif action == "removeDim": 
 			if product: 
 				select_stmt = "select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
@@ -310,20 +330,23 @@ def getResults():
 			havingby_stmt = "Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"+" AND Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Product p, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by t."+time+", t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by t."+time+", t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy
-			elif product: 
-				select_stmt = "select p."+product+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Product p, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND p.product_key = f.product_key "
-				groupby_stmt = "group by p."+product+", t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by p."+product+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy
-			elif store: 
-				select_stmt = "select s."+store+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
+				query_adder += (", t."+time)
+				select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
 				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND p.product_key = f.product_key AND s.store_key = f.store_key "
-				groupby_stmt = "group by s."+store+", t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy+" order by s."+store+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
+			elif product: 
+				query_adder += (", p."+product)
+				select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
+			elif store: 
+				query_adder += (", s."+store)
+				select_stmt = "select p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 		elif action == "removeDim":
 			if time:
 				select_stmt = "select p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
@@ -374,20 +397,23 @@ def getResults():
 			havingby_stmt = " Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\) AND Having \( s."+store+ "='"+ storehavingby1 + "' or '" + storehavingby2 + "'\)"
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Store s, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND s.store_key = f.store_key "
-				groupby_stmt = "group by t."+time+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by t."+time+", t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy
+				query_adder += (", t."+time)
+				select_stmt = "select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy + query_adder
 			elif product: 
-				select_stmt = "select p."+product+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Store s, Product p, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = p.product_key "
-				groupby_stmt = "group by p."+product+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by p."+product+", t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy
+				query_adder += (", p."+product)
+				select_stmt = "select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy + query_adder
 			elif store: 
-				select_stmt = "select s."+store+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Time t, Store s, `sales_fact` f "
-				where_stmt = "where t.time_key = f.time_key AND s.store_key = f.store_key "
-				groupby_stmt = "group by s."+store+", s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by s."+store+", t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy
+				query_adder += (", s."+store)
+				select_stmt = "select s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Time t, Product p, Store s, `sales_fact` f "
+				where_stmt = " where t.time_key = f.time_key AND s.store_key = f.store_key AND p.product_key = f.product_key "
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy + query_adder
 		elif action == "removeDim":
 			if time:
 				select_stmt = "select s."+__storeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
@@ -449,20 +475,23 @@ def getResults():
 			havingby_stmt = "Having \( t."+time+ "="+ timehavingby1 + " or " + timehavingby2 + "\)"+" AND Having \( s."+store+ "="+ storehavingby1 + " or " + storehavingby2 + "\)"+" AND Having \( p."+product+ "="+ producthavingby1 + " or " + producthavingby2 + "\)"
 		elif action == "addDim":
 			if time: 
-				select_stmt = "select t."+time+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
+				query_adder += (", t."+time)
+				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
 				from_stmt = "from Product p, Time t, Store s,`sales_fact` f "
 				where_stmt = "where p.product_key = f.product_key "+"AND s.store_key = f.store_key "+"AND t.time_key = f.time_key "
-				groupby_stmt = "group by t."+time+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by t."+time+", t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 			elif product: 
-				select_stmt = "select p."+product+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
+				query_adder += (", p."+product)
+				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
 				from_stmt = "from Product p, Time t, Store s,`sales_fact` f "
 				where_stmt = "where p.product_key = f.product_key "+"AND s.store_key = f.store_key "+"AND t.time_key = f.time_key "
-				groupby_stmt = "group by p."+product+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by p."+product+", t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 			elif store: 
-				select_stmt = "select s."+store+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
-				from_stmt = "from Product p, Time t, Store s, `sales_fact` f "
+				query_adder += (", s."+store)
+				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +", sum(f.dollar_sales) AS total_sales "
+				from_stmt = "from Product p, Time t, Store s,`sales_fact` f "
 				where_stmt = "where p.product_key = f.product_key "+"AND s.store_key = f.store_key "+"AND t.time_key = f.time_key "
-				groupby_stmt = "group by s."+store+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+" order by s."+store+", t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy
+				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 		elif action == "removeDim": 
 			if time: 
 				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
@@ -496,7 +525,7 @@ def getResults():
 def connect():
 	try:
 		conn = MySQLdb.connect(host='localhost', user='root',
-		 passwd='157b', db='grocerydb')
+		 passwd='', db='grocerydb')
 		if conn.is_connected():
 			print 'Connected to MySQL database'
 	except getopt.GetoptError, e:
