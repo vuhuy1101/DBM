@@ -494,7 +494,6 @@ def getResults():
 				groupby_stmt = "group by s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", t."+__timeDimensionHierarchy+ query_adder +" order by t."+__timeDimensionHierarchy+", s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy + query_adder
 		elif action == "removeDim": 
 			if time: 
-				query_adder += (", s."+store)
 				select_stmt = "select s."+__storeDimensionHierarchy+", p."+__productDimensionHierarchy+", sum(f.dollar_sales) AS total_sales "
 				from_stmt = "from Product p, Store s,`sales_fact` f "
 				where_stmt = "where p.product_key = f.product_key "+"AND s.store_key = f.store_key "
