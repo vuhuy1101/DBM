@@ -4,11 +4,10 @@ var q5 = "";
 var q6 = "";
 var q7 = "";
 var q = "";
+var q3 = "";
 $(document).ready(function(){
-
   var q1 = "";
   var q2 = "";
-  var q3 = "";
   var temp1 = "";
   var temp2 = "";
   
@@ -61,15 +60,16 @@ $(document).ready(function(){
       $('#product_box').toggle(this.checked);
       q3 = $('#product_box').val();
     });
-    $('#store_box').click(function(){
-      $('#store_box').toggle(this.checked);
-      q3 = $('#store_box').val();
-    });
     */
+    
+    
 
     q = q1 + q2 + q3;
   });  
   
+  $('#store_box').click(function(){
+    $('#store_box').toggle(this.checked);
+  });
  
 
 	 // $(function(){
@@ -119,6 +119,30 @@ $(document).ready(function(){
 
 
    $('#submit').click(function(){
+    
+    if($("#store_box").is(':checked')){
+      alert($('#_store').val());
+      q += ("&conceptStore=" + $('#_store').val());
+     }
+    
+    if($("#product_box").is(':checked')){
+      if($('select').attr('name') == 'productAttr'){
+        alert($('#_product').val());
+        q += ("&conceptProduct=" + $('#_product').val());
+      }
+     }
+    
+
+    if($("#time_box").is(':checked')){
+      if($('select').attr('name') == 'timeAttr'){
+        alert($('#_time').val());
+        q += ("&conceptTime=" + $('#_time').val());
+      }
+     }
+    
+    
+   
+    
     
     if($("#timeAttr0").val() != "")
       q4 = "&val0=" + $("#timeAttr0").val();
