@@ -104,7 +104,6 @@ def getResults():
 		if action == "slice":
 			if time:
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		elif action == "dice":
 				havingby_stmt = (" Having (t."+time+ " = '"+ timehavingby1 + "' OR t."+time+ " = '" + timehavingby2 + "' )")
 		elif action == "addDim":
@@ -181,7 +180,6 @@ def getResults():
 		if action == "slice":
 			if product:
 				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = (" Having (p."+product+ " = '"+ producthavingby1 + "' OR p."+product+ " = '" + producthavingby2 + "' )")
 		elif action == "addDim":
@@ -249,7 +247,6 @@ def getResults():
 		if action == "slice":
 			if store:
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = (" Having (s."+store+ " = '"+ storehavingby1 + "' OR s."+store+ " = '" + storehavingby2 + "' )")
 		elif action == "addDim":
@@ -328,10 +325,8 @@ def getResults():
 		if action == "slice":
 			if product:
 				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 			elif store:
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		elif action == "dice":		
 			havingby_stmt = (" Having (p."+product+" = '"+ producthavingby1 + "' OR p."+product+" = '" + producthavingby2 + "') AND (s." + store +" = '"+ storehavingby1 + "' OR s."+store+ " = '"+ storehavingby2 + "' )")
 		elif action == "addDim":
@@ -407,10 +402,8 @@ def getResults():
 		if action == "slice":
 			if product:
 				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 			elif time:
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = (" Having (p."+product+" = '"+ producthavingby1 + "' OR p."+product+" = '" + producthavingby2 + "') AND (t." + time +" = '"+ timehavingby1 + "' OR t."+time+ " = '"+ timehavingby2 + "' )")
 		elif action == "addDim":
@@ -486,10 +479,8 @@ def getResults():
 		if action == "slice":
 			if time:
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 			elif store:
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		elif action == "dice":
 			havingby_stmt = (" Having (t."+time+" = '"+ timehavingby1 + "' OR t."+time+" = '" + timehavingby2 + "') AND (s." + store +" = '"+ storehavingby1 + "' OR s."+store+ " = '"+ storehavingby2 + "' )")
 		elif action == "addDim":
@@ -573,13 +564,10 @@ def getResults():
 		if action == "slice":
 			if product:
 				havingby_stmt = (" Having p."+product+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 			elif store:
 				havingby_stmt = (" Having s."+store+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 			elif time:
 				havingby_stmt = (" Having t."+time+ "= '"+ havingby + "' ")
-				groupby_stmt += havingby_stmt
 		if action == "dice":
 			havingby_stmt = (" Having (p."+product+" = '"+ producthavingby1 + "' OR p."+product+" = '" + producthavingby2 + "') AND (s." + store +" = '"+ storehavingby1 + "' OR s."+store+ " = '"+ storehavingby2 + "' ) AND (t." + time +" = '"+ timehavingby1 + "' OR t."+time+ " = '"+ timehavingby2 + "' )")
 		elif action == "addDim":
